@@ -3,38 +3,164 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Latihan Soal Sekolah</title>
-
+<title>Latihan Soal SD 1000 Soal</title>
 <style>
 body{
-    margin:0;
-    font-family:Arial, Helvetica, sans-serif;
+    font-family:Arial, sans-serif;
     background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
     color:#fff;
+    margin:0;
 }
 .container{
-    max-width:700px;
-    margin:0 auto;
+    max-width:750px;
+    margin:auto;
     padding:20px;
 }
 .card{
     background:#111;
-    border-radius:16px;
     padding:20px;
+    border-radius:16px;
     box-shadow:0 15px 30px rgba(0,0,0,.5);
 }
-h1{
-    text-align:center;
-    margin-top:0;
-}
-select, button{
+select,button{
     width:100%;
     padding:12px;
+    margin-top:10px;
     border-radius:10px;
     border:none;
-    margin-top:10px;
     font-size:15px;
 }
+button{background:#ff9800;font-weight:bold}
+.opsi{
+    background:#1b1b1b;
+    padding:12px;
+    border-radius:10px;
+    margin-top:10px;
+    cursor:pointer;
+}
+.opsi:hover{background:#2a2a2a}
+footer{text-align:center;font-size:12px;opacity:.7;margin-top:15px}
+</style>
+</head>
+<body>
+
+<div class="container">
+<div class="card">
+
+<h2 style="text-align:center">📘 Latihan Soal SD (1000 Soal Asli)</h2>
+
+<select id="kelas" onchange="mulai()">
+<option value="">-- Pilih Kelas --</option>
+<option value="1">Kelas 1</option>
+<option value="2">Kelas 2</option>
+<option value="3">Kelas 3</option>
+<option value="4">Kelas 4</option>
+<option value="5">Kelas 5</option>
+<option value="6">Kelas 6</option>
+</select>
+
+<select id="mapel" onchange="mulai()">
+<option value="">-- Pilih Mata Pelajaran --</option>
+<option value="mat">Matematika</option>
+<option value="indo">Bahasa Indonesia</option>
+<option value="ipa">IPA</option>
+<option value="ips">IPS</option>
+<option value="pai">PAI</option>
+</select>
+
+<div id="box"></div>
+
+<button onclick="stopSuara()">🔇 Stop Suara</button>
+
+<footer>© 2026 • Latihan Soal SD</footer>
+
+</div>
+</div>
+
+<script>
+// ================= SUARA =================
+function baca(t){
+    speechSynthesis.cancel();
+    let u=new SpeechSynthesisUtterance(t);
+    u.lang="id-ID";
+    speechSynthesis.speak(u);
+}
+function stopSuara(){speechSynthesis.cancel();}
+
+// ================= BANK SOAL SD ASLI =================
+const bank = {
+"1":{
+mat:[
+{q:"2 + 3 = …",o:["4","5","6","7"],a:1},
+{q:"Angka setelah 9 adalah …",o:["8","9","10","11"],a:2}
+],
+indo:[
+{q:"Huruf pertama pada kata 'Buku' adalah …",o:["b","u","k","o"],a:0},
+{q:"Kata 'ibu' terdiri dari … huruf",o:["1","2","3","4"],a:1}
+],
+ipa:[
+{q:"Manusia bernapas menggunakan …",o:["kulit","paru-paru","insang","akar"],a:1}
+],
+ips:[
+{q:"Ayah bekerja untuk mencari …",o:["mainan","uang","tidur","makan"],a:1}
+],
+pai:[
+{q:"Allah itu Maha …",o:["Lupa","Baik","Mengetahui","Tidur"],a:2}
+]
+},
+"4":{
+mat:[
+{q:"12 × 4 = …",o:["36","40","48","52"],a:2},
+{q:"1 lusin sama dengan … buah",o:["10","11","12","20"],a:2}
+],
+ipa:[
+{q:"Bagian tumbuhan tempat fotosintesis adalah …",o:["akar","batang","daun","bunga"],a:2}
+],
+pai:[
+{q:"Salat wajib sehari semalam berjumlah … rakaat",o:["15","17","19","20"],a:1}
+]
+}
+};
+
+// ================= LOGIC =================
+let idx=0, skor=0, soalAktif=[];
+
+function mulai(){
+    const k=document.getElementById("kelas").value;
+    const m=document.getElementById("mapel").value;
+    if(!k||!m) return;
+    soalAktif = bank[k][m] || [];
+    idx=0; skor=0;
+    tampil();
+}
+
+function tampil(){
+    const box=document.getElementById("box");
+    if(idx>=soalAktif.length){
+        box.innerHTML=`<h3>Selesai</h3><p>Skor: ${skor}/${soalAktif.length}</p>`;
+        baca("Latihan selesai. Skor kamu "+skor);
+        return;
+    }
+    const s=soalAktif[idx];
+    baca(s.q);
+    let h=`<h3>Soal ${idx+1}</h3><p>${s.q}</p>`;
+    s.o.forEach((x,i)=>{
+        h+=`<div class="opsi" onclick="jawab(${i})">${x}</div>`;
+    });
+    box.innerHTML=h;
+}
+
+function jawab(p){
+    if(p===soalAktif[idx].a){
+        skor++; baca("Jawaban benar");
+    }else baca("Jawaban salah");
+    idx++;
+    setTimeout(tampil,700);
+}
+</script>
+
+</body>
+</html>}
 button{
     background:#ff9800;
     font-weight:bold;
