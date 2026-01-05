@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Latihan Soal Sekolah</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:#fff;
+}
+.container{
+    max-width:700px;
+    margin:0 auto;
+    padding:20px;
+}
+.card{
+    background:#111;
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 15px 30px rgba(0,0,0,.5);
+}
+h1{
+    text-align:center;
+    margin-top:0;
+}
+select, button{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:none;
+    margin-top:10px;
+    font-size:15px;
+}
+button{
+    background:#ff9800;
+    font-weight:bold;
+    cursor:pointer;
+}
+button.secondary{
+    background:#444;
+    color:#fff;
+}
+.soal{
+    margin-top:20px;
+}
+.opsi{
+    background:#1b1b1b;
+    padding:12px;
+    border-radius:10px;
+    margin-top:10px;
+    cursor:pointer;
+}
+.opsi:hover{
+    background:#2a2a2a;
+}
+footer{
+    text-align:center;
+    font-size:12px;
+    opacity:.7;
+    margin-top:15px;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+    <div class="card">
+        <h1>📘 Latihan Soal Sekolah</h1>
+        <p style="text-align:center;font-size:14px;opacity:.8">
+            Pilih mata pelajaran, soal dibacakan suara
+        </p>
+
+        <select id="mapel" onchange="mulai()">
+            <option value="">-- Pilih Mata Pelajaran --</option>
+            <option value="matematika">Matematika</option>
+            <option value="bahasa">Bahasa Indonesia</option>
+            <option value="ipa">IPA</option>
+            <option value="ips">IPS</option>
+            <option value="pai">PAI</option>
+        </select>
+
+        <div class="soal" id="soalBox"></div>
+
+        <button class="secondary" onclick="stopSuara()">🔇 Stop Suara</button>
+
+        <footer>
+            © 2026 • Latihan Soal Interaktif
+        </footer>
+    </div>
+</div>
+
+<script>
+// ================= DATA SOAL =================
+const soalData = {
+matematika:[
+    {q:"Hasil dari 12 + 8 adalah …", o:["18","19","20","21"], a:2},
+    {q:"5 × 6 = …", o:["25","30","35","40"], a:1}
+],
+bahasa:[
+    {q:"Lawan kata 'besar' adalah …", o:["tinggi","kecil","panjang","lebar"], a:1},
+    {q:"Kalimat tanya diakhiri dengan tanda …", o:[".","!","?",","], a:2}
+],
+ipa:[
+    {q:"Makhluk hidup memerlukan … untuk bernapas", o:["air","makanan","udara","tanah"], a:2},
+    {q:"Bagian tumbuhan tempat fotosintesis adalah …", o:["akar","batang","daun","bunga"], a:2}
+],
+ips:[
+    {q:"Ibu kota Indonesia adalah …", o:["Bandung","Surabaya","Jakarta","Medan"], a:2},
+    {q:"Pekerjaan petani menghasilkan …", o:["ikan","padi","garam","kayu"], a:1}
+],
+pai:[
+    {q:"Rukun Islam berjumlah …", o:["3","4","5","6"], a:2},
+    {q:"Nabi terakhir adalah Nabi …", o:["Adam","Musa","Isa","Muhammad"], a:3}
+]
+};
+
+let indexSoal = 0;
+let skor = 0;
+let aktif = "";
+
+// ================= SUARA =================
+function baca(teks){
+    stopSuara();
+    const u = new SpeechSynthesisUtterance(teks);
+    u.lang = "id-ID";
+    speechSynthesis.speak(u);
+}
+function stopSuara(){
+    speechSynthesis.cancel();
+}
+
+// ================= LOGIC =================
+function mulai(){
+    aktif = document.getElementById("mapel").value;
+    indexSoal = 0;
+    skor = 0;
+    tampilSoal();
+}
+
+function tampilSoal(){
+    const box = document.getElementById("soalBox");
+    const data = soalData[aktif];
+
+    if(!data){ box.innerHTML=""; return; }
+
+    if(indexSoal >= data.length){
+        box.innerHTML = `
+            <h3>✅ Selesai</h3>
+            <p>Skor kamu: <b>${skor}/${data.length}</b></p>
+            <button onclick="mulai()">Ulangi</button>
+        `;
+        baca("Latihan selesai. Skor kamu " + skor);
+        return;
+    }
+
+    const s = data[indexSoal];
+    baca("Soal. " + s.q);
+
+    let html = `<h3>Soal ${indexSoal+1}</h3><p>${s.q}</p>`;
+    s.o.forEach((opsi,i)=>{
+        html += `<div class="opsi" onclick="jawab(${i})">${opsi}</div>`;
+    });
+
+    box.innerHTML = html;
+}
+
+function jawab(pilihan){
+    const s = soalData[aktif][indexSoal];
+    if(pilihan === s.a){
+        skor++;
+        baca("Jawaban benar");
+    }else{
+        baca("Jawaban salah");
+    }
+    indexSoal++;
+    setTimeout(tampilSoal, 800);
+}
+</script>
+
+</body>
+</html>
